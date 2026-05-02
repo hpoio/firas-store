@@ -14,7 +14,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'firas-store-secret-key-2024'
 
 db = SQLAlchemy(app)
-
+with app.app_context():
+    db.create_all()
 # --- Product Model ---
 class Product(db.Model):
     __tablename__ = 'products'
