@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Cart - Firas Store{% endblock %}
+
+{% block content %}
+<section class="container" style="padding-top: 120px;">
+    <h1 style="text-align:center; margin-bottom:3rem;">Shopping Cart</h1>
+    <div id="cart-items"></div>
+    <div style="text-align:right; margin-top:2rem;">
+        <h2>Total: <span id="cart-total">0.00 DA</span></h2>
+        <button id="cart-instagram-order" class="btn" style="margin-top:2rem; display:inline-block;">
+            📱 Order via Instagram DM
+        </button>
+    </div>
+</section>
+{% endblock %}
+

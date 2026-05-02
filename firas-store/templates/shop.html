@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Luxury Collection - Firas Store{% endblock %}
+
+{% block content %}
+<section class="container" style="padding-top: 120px;">
+    <div class="search-filter">
+        <div style="flex:1;">
+            <input type="text" id="search" class="search-input" placeholder="Search luxury collection...">
+        </div>
+        <select id="category-filter" class="filter-select">
+            <option value="all">All Categories</option>
+            <option value="Classic Polo Collection">Classic Polo Collection</option>
+            <option value="Bottoms">Bottoms</option>
+            <option value="Outerwear">Outerwear</option>
+            <option value="Summer Collection">Summer Collection</option>
+        </select>
+    </div>
+    
+    <div id="products-container" class="products-grid">
+        {% for product in products %}
+        <div class="product-card" data-category="{{ product.category }}" data-name="{{ product.name }}">
+            <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+            <div class="category">{{ product.category | upper }}</div>
+            <h3>{{ product.name }}</h3>
+            <div class="product-price">
+                {% if product.original_price %}
+                <span style="text-decoration: line-through; opacity: 0.6; font-size: 1.2rem; margin-right: 0.5rem;">{{ product.original_price | int }} DA</span>
+                {% endif %}
+                {{ product.price | int }} DA
+            </div>
+            <a href="/product/{{ product.id }}" class="add-to-cart">View Product</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+(function() {
+    const searchInput = document.getElementById('search');
+    const categoryFilter = document.getElementById('category-filter');
+    const cards = document.querySelectorAll('.product-card');
+
+    function filterProducts() {
+        const query = searchInput.value.toLowerCase();
+        const cat = categoryFilter.value;
+        cards.forEach(card => {
+            const name = card.dataset.name.toLowerCase();
+            const category = card.dataset.category;
+            const matchesSearch = name.includes(query);
+            const matchesCategory = cat === 'all' || category === cat;
+            card.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', filterProducts);
+    categoryFilter.addEventListener('change', filterProducts);
+})();
+</script>
+{% endblock %}
+

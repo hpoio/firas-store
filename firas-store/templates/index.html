@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section id="hero" class="hero-section">
+    <div class="hero-inner">
+        <h1 class="hero-title">Welcome to Firas Store</h1>
+        <p class="hero-subtitle">Where Luxury Meets Modern Fashion</p>
+        <a href="#products" class="btn cta-btn hero-cta">Shop Now</a>
+    </div>
+</section>
+
+<!-- Products Section -->
+<div id="products" class="container">
+    <h2 class="text-center mb-4">Our Collection</h2>
+    <div class="products-grid">
+        {% for product in PRODUCTS %}
+        <div class="product-card reveal">
+            <div class="product-image-wrapper">
+                <img src="{{ url_for('static', filename=product.image) }}" class="product-image" alt="{{ product.name }}" loading="lazy">
+            </div>
+            <h3>{{ product.name }}</h3>
+            <p class="product-price">{{ product.price }} DZD</p>
+            <div class="product-actions">
+                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-outline">View Details</a>
+                <button class="btn btn-add-cart" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-image="{{ product.image }}" onclick="addToCartFromButton(this)">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

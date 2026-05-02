@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="product-grid">
+        <div class="gallery reveal">
+            <img id="main-img" class="gallery-main" src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" loading="lazy">
+            <div class="gallery-thumbs">
+                <img src="{{ url_for('static', filename=product.image) }}" onclick="document.getElementById('main-img').src=this.src" class="gallery-thumb" alt="{{ product.name }}" loading="lazy">
+            {% if product.detailed_images %}
+                    {% for img in product.detailed_images %}
+                    <img src="{{ url_for('static', filename=img) }}" onclick="document.getElementById('main-img').src=this.src" class="gallery-thumb" alt="{{ product.name }}" loading="lazy">
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+        <div class="details reveal">
+            <h1 id="p-name">{{ product.name }}</h1>
+            <h2 class="product-price-large">{{ product.price }} DA</h2>
+            
+            <!-- Urgency & Social Proof -->
+            <div class="urgency-bar">
+                <span class="urgency-text pulse-glow" id="urgency-viewers">🔥 5 people are viewing this right now</span>
+                <span class="urgency-text pulse-glow" id="urgency-stock" style="display:none;">Only <strong id="stock-count">{{ product.stock_quantity }}</strong> pieces left in stock!</span>
+            </div>
+
+            <div class="details-info-card">
+                <h4>Description</h4>
+                <p>Experience the pinnacle of refined style with this exclusive piece from Firas Store. Meticulously crafted with premium fabrics and tailored for a flawless silhouette, this item embodies the perfect fusion of modern fashion and timeless luxury.</p>
+                
+                <h4>Specifications</h4>
+                <ul class="spec-list">
+                    <li><strong>Material:</strong> High-grade premium cotton / genuine leather / performance fabric</li>
+                    <li><strong>Fit:</strong> Tailored regular fit with structured shoulders</li>
+                    <li><strong>Care:</strong> Dry clean recommended; gentle hand wash acceptable</li>
+                    <li><strong>Origin:</strong> Designed in-house at Firas Store</li>
+                </ul>
+            </div>
+
+            <div class="product-detail-actions">
+                {% if product.stock_quantity > 0 %}
+                <button class="btn btn-add-cart btn-add-cart-large" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}" data-image="{{ product.image }}" onclick="addToCartFromButton(this)">
+                    <i class="fas fa-cart-plus"></i> Add to Cart
+                </button>
+                {% else %}
+                <button class="btn btn-add-cart btn-add-cart-large" disabled style="opacity:0.5;cursor:not-allowed;">
+                    <i class="fas fa-times-circle"></i> Sold Out / نفد من المخزون
+                </button>
+                {% endif %}
+            </div>
+
+            <div class="order-card">
+                <h3 id="form-title">Order Details</h3>
+                
+                <form method="POST" action="/order">
+                    <input type="hidden" name="product_name" value="{{ product.name }}">
+                    <input type="hidden" name="price" value="{{ product.price }}">
+                    
+                    <div class="form-group size-guide-row">
+                        <label for="order-size">Size</label>
+                        <select id="order-size" name="size">
+                            <option value="M">M</option>
+                            <option value="L" selected>L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                        </select>
+                        <a href="javascript:void(0)" class="size-guide-link" onclick="openSizeGuide()">
+                            <i class="fas fa-ruler"></i> Size Guide
+                        </a>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="order-color">Color</label>
+                        <select id="order-color" name="color">
+                            <option value="Black" selected>Black</option>
+                            <option value="White">White</option>
+                            <option value="Navy Blue">Navy Blue</option>
+                            <option value="Beige">Beige</option>
+                            <option value="Gray">Gray</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cust-name">Your Name</label>
+                        <input type="text" id="cust-name" name="customer_name" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cust-phone">Phone Number</label>
+                        <input type="text" id="cust-phone" name="customer_phone" placeholder="Enter your phone number" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cust-addr">Shipping Address</label>
+                        <textarea id="cust-addr" name="address" placeholder="Enter your shipping address"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-order btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> CONFIRM ORDER
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Size Guide Modal -->
+<div id="size-guide-modal" class="modal-overlay" onclick="closeSizeGuide(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3><i class="fas fa-ruler-combined"></i> Size Guide</h3>
+            <button class="modal-close" onclick="closeSizeGuide()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; text-align: center;">All measurements are in centimeters (cm)</p>
+            <div class="table-wrapper">
+                <table class="admin-table size-guide-table">
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Chest</th>
+                            <th>Waist</th>
+                            <th>Length</th>
+                            <th>Sleeve</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="status-badge status-pending">M</span></td>
+                            <td>96 - 102</td>
+                            <td>82 - 88</td>
+                            <td>68</td>
+                            <td>62</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status-badge status-pending">L</span></td>
+                            <td>102 - 108</td>
+                            <td>88 - 94</td>
+                            <td>70</td>
+                            <td>64</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status-badge status-pending">XL</span></td>
+                            <td>108 - 114</td>
+                            <td>94 - 100</td>
+                            <td>72</td>
+                            <td>66</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status-badge status-pending">XXL</span></td>
+                            <td>114 - 120</td>
+                            <td>100 - 106</td>
+                            <td>74</td>
+                            <td>68</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="color: var(--text-muted); margin-top: 1.5rem; font-size: 0.85rem; text-align: center;">
+                <i class="fas fa-info-circle"></i> If you are between sizes, we recommend choosing the larger size for a comfortable fit.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    // Urgency text rotation
+    const viewersEl = document.getElementById('urgency-viewers');
+    const stockEl = document.getElementById('urgency-stock');
+    const stockCount = parseInt(document.getElementById('stock-count')?.textContent || '0');
+    
+    if (stockCount > 0 && stockCount <= 10) {
+        stockEl.style.display = 'inline';
+    }
+    
+    let showStock = false;
+    setInterval(() => {
+        if (stockCount > 0 && stockCount <= 10) {
+            showStock = !showStock;
+            viewersEl.style.display = showStock ? 'none' : 'inline';
+            stockEl.style.display = showStock ? 'inline' : 'none';
+        }
+    }, 4000);
+    
+    // Random viewer count
+    if (viewersEl) {
+        setInterval(() => {
+            const count = Math.floor(Math.random() * 8) + 3;
+            viewersEl.innerHTML = `🔥 ${count} people are viewing this right now`;
+        }, 8000);
+    }
+})();
+</script>
+{% endblock %}

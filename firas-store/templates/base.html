@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FIRAS STORE{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Watermark Layer -->
+    <div class="watermark-layer" aria-hidden="true">
+        <div class="watermark-text">FIRAS STORE</div>
+        <div class="watermark-text">FIRAS STORE</div>
+        <div class="watermark-text">FIRAS STORE</div>
+        <div class="watermark-text">FIRAS STORE</div>
+        <div class="watermark-text">FIRAS STORE</div>
+    </div>
+
+    <!-- Fashion Stickers Layer -->
+    <div class="sticker-layer" aria-hidden="true">
+        <div class="fashion-sticker"><i class="fas fa-tshirt"></i></div>
+        <div class="fashion-sticker"><i class="fas fa-gem"></i></div>
+        <div class="fashion-sticker"><i class="fas fa-user-tie"></i></div>
+        <div class="fashion-sticker"><i class="fas fa-crown"></i></div>
+        <div class="fashion-sticker"><i class="fas fa-star"></i></div>
+        <div class="fashion-sticker"><i class="fas fa-heart"></i></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="logo">FIRAS STORE</a>
+        <div class="nav-links">
+            <a href="/#hero" class="nav-link"><i class="fas fa-home"></i> Home</a>
+            <a href="/#products" class="nav-link">Our Products</a>
+            <a href="/shop" class="nav-link">Shop</a>
+            <a href="/" class="nav-link">New Arrivals</a>
+            <a href="#footer-contact" class="nav-link">Contact</a>
+        </div>
+        <div class="nav-tools">
+            <button class="nav-icon cart-trigger" onclick="toggleCart()" aria-label="Shopping Cart">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="cart-badge" class="cart-badge">0</span>
+            </button>
+            <select id="lang-switch" onchange="changeLanguage(this.value)">
+                <option value="en">EN</option>
+                <option value="ar">AR</option>
+                <option value="fr">FR</option>
+            </select>
+        </div>
+    </nav>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+    <aside id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-sidebar-header">
+            <h3><i class="fas fa-shopping-bag"></i> Shopping Cart</h3>
+            <span id="cart-count-header" class="cart-count-header">0 items</span>
+            <button class="cart-close" onclick="toggleCart()" aria-label="Close cart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div id="cart-items-container" class="cart-items-container">
+            <!-- Cart items rendered by JS -->
+        </div>
+
+        <div id="cart-empty-state" class="cart-empty-state">
+            <i class="fas fa-shopping-basket"></i>
+            <p>Your cart is empty</p>
+            <a href="/#products" class="btn btn-discover" onclick="toggleCart()">Discover Our Products</a>
+        </div>
+
+        <div id="cart-footer" class="cart-footer">
+            <div class="cart-total-row">
+                <span>Total</span>
+                <span id="cart-total-price" class="cart-total-price">0 DA</span>
+            </div>
+            <a href="/checkout" class="btn btn-checkout">Proceed to Checkout</a>
+        </div>
+    </aside>
+
+    {% block content %}{% endblock %}
+
+    <footer id="footer-contact" class="luxury-footer">
+        <div class="footer-content">
+            <h3 class="footer-title">Our Customer Service</h3>
+            <div class="footer-links">
+                <a href="https://wa.me/213657744371" target="_blank" class="footer-icon glow-whatsapp" aria-label="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <a href="https://www.instagram.com/rbn._.firas_x" target="_blank" class="footer-icon glow-instagram" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
+                </a>
+            </div>
+            <p class="footer-copy">&copy; 2024 FIRAS STORE. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

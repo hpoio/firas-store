@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Firas Store{% endblock %}
+
+{% block content %}
+<section class="container" style="padding-top: 140px;">
+    <h2 class="text-center mb-4">Order Summary</h2>
+
+    <div id="checkout-empty" class="empty-state" style="display:none;">
+        <i class="fas fa-shopping-basket" style="font-size: 4rem; color: var(--gold); margin-bottom: 1rem; opacity: 0.5;"></i>
+        <p>Your cart is empty</p>
+        <a href="/#products" class="btn btn-discover">Discover Our Products</a>
+    </div>
+
+    <div id="checkout-content">
+        <div class="table-wrapper">
+            <table class="admin-table" id="checkout-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="checkout-body">
+                    <!-- Rendered by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="order-card" style="margin-top: 2rem;">
+            <div class="cart-total-row" style="font-size: 1.2rem; margin-bottom: 1.5rem;">
+                <span>Grand Total</span>
+                <span id="checkout-grand-total" class="cart-total-price">0 DA</span>
+            </div>
+
+            <div class="form-group">
+                <label for="co-name">Your Name</label>
+                <input type="text" id="co-name" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="co-phone">Phone Number</label>
+                <input type="text" id="co-phone" placeholder="Enter your phone number">
+            </div>
+            <div class="form-group">
+                <label for="co-address">Shipping Address</label>
+                <textarea id="co-address" placeholder="Enter your shipping address"></textarea>
+            </div>
+
+            <button class="btn btn-whatsapp btn-checkout" onclick="sendCheckoutOrder()" style="margin-top: 1rem;">
+                <i class="fab fa-whatsapp"></i> Confirm Purchase via WhatsApp
+            </button>
+            <a href="/#products" class="btn btn-outline btn-checkout" style="margin-top: 0.8rem; text-align:center;">
+                Continue Shopping
+            </a>
+        </div>
+</section>
+
+<script>
+(function() {
+    const CART_STORAGE_KEY = 'firas_cart';
+
+    function getCart() {
+        try { return JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || []; }
+        catch { return []; }
+    }
+
+    function formatPrice(n) { return n.toLocaleString() + ' DZD'; }
+
+    function renderCheckout() {
+        const cart = getCart();
+        const tbody = document.getElementById('checkout-body');
+        const emptyState = document.getElementById('checkout-empty');
+        const content = document.getElementById('checkout-content');
+        const grandTotalEl = document.getElementById('checkout-grand-total');
+
+        if (cart.length === 0) {
+            emptyState.style.display = 'block';
+            content.style.display = 'none';
+            return;
+        }
+
+        emptyState.style.display = 'none';
+        content.style.display = 'block';
+
+        let grandTotal = 0;
+
+        tbody.innerHTML = cart.map((item, idx) => {
+            const subtotal = item.price * item.quantity;
+            grandTotal += subtotal;
+            const size = item.size || 'L';
+            const color = item.color || 'Black';
+            return `
+                <tr>
+                    <td><img src="/static/${item.image}" alt="${item.name}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--gold-border);"></td>
+                    <td style="font-weight:600;color:var(--text-primary);">${item.name}</td>
+                    <td><span class="status-badge status-pending">${size}</span></td>
+                    <td><span class="status-badge status-completed">${color}</span></td>
+                    <td>${item.quantity}</td>
+                    <td style="color:var(--gold);font-weight:600;">${formatPrice(item.price)}</td>
+                    <td style="color:var(--gold);font-weight:700;">${formatPrice(subtotal)}</td>
+                    <td>
+                        <button class="btn-small btn-danger" onclick="removeCheckoutItem(${item.id})" title="Remove">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        grandTotalEl.textContent = formatPrice(grandTotal);
+    }
+
+    window.removeCheckoutItem = function(id) {
+        let cart = getCart();
+        cart = cart.filter(item => item.id !== id);
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+        renderCheckout();
+        if (typeof updateCartCount === 'function') updateCartCount();
+    };
+
+    window.sendCheckoutOrder = function() {
+        const cart = getCart();
+        if (cart.length === 0) {
+            alert("Your cart is empty.");
+            return;
+        }
+        const name = document.getElementById('co-name')?.value.trim();
+        const phone = document.getElementById('co-phone')?.value.trim();
+        const address = document.getElementById('co-address')?.value.trim();
+
+        if (!name || !phone) {
+            alert("Please fill in your name and phone number.");
+            return;
+        }
+
+        let total = 0;
+        let itemsText = cart.map((item, i) => {
+            const subtotal = item.price * item.quantity;
+            total += subtotal;
+            const size = item.size || 'L';
+            const color = item.color || 'Black';
+            return `${i + 1}. ${item.name} | Size: ${size} | Color: ${color} | Qty: ${item.quantity} | ${item.price} DZD`;
+        }).join('\n');
+
+        const text = encodeURIComponent(
+            `Hello Firas Store! I'd like to place an order:\n\n` +
+            `Customer: ${name}\n` +
+            `Phone: ${phone}` +
+            (address ? `\nAddress: ${address}` : '') +
+            `\n\nItems:\n${itemsText}\n\n` +
+            `Grand Total: ${total.toLocaleString()} DZD`
+        );
+
+        window.open(`https://wa.me/213657744371?text=${text}`, '_blank');
+    };
+
+    renderCheckout();
+})();
+</script>
+{% endblock %}
